@@ -1,0 +1,482 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Greatest Common Factor Bingo</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;700&display=swap');
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html, body {
+            height: 100%;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Nunito', sans-serif;
+            background: linear-gradient(135deg, #383962, #69ad6c);
+            padding: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-sizing: border-box;
+        }
+
+        .game-container {
+            background: white;
+            border-radius: 20px;
+            padding: 20px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            width: 100%;
+            height: 100%;
+            max-width: 100%;
+            max-height: 100%;
+            aspect-ratio: 16/9;
+            display: flex;
+            gap: 20px;
+            box-sizing: border-box;
+            position: relative;
+        }
+
+        .left-column {
+            flex: 0 0 40%;
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+        }
+
+        .branding-space {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+        }
+
+        .instructions {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 15px;
+            border-left: 4px solid #69ad6c;
+            font-size: 14px;
+            line-height: 1.4;
+        }
+
+        .instructions h3 {
+            color: #383962;
+            margin-bottom: 8px;
+            font-size: 16px;
+        }
+
+        .instructions ol {
+            color: #555;
+            padding-left: 18px;
+        }
+
+        .instructions li {
+            margin-bottom: 4px;
+        }
+
+        .equation-container {
+            background: #383962;
+            color: white;
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            min-height: 120px;
+            position: relative;
+        }
+
+        .question-counter {
+            position: absolute;
+            top: 10px;
+            right: 15px;
+            background: rgba(255,255,255,0.2);
+            padding: 5px 10px;
+            border-radius: 15px;
+            font-size: 12px;
+        }
+
+        .equation-text {
+            font-size: 48px;
+            font-weight: bold;
+            text-align: center;
+            line-height: 1.2;
+        }
+
+        .answer-display {
+            font-size: 24px;
+            margin-top: 10px;
+            color: #69ad6c;
+            font-weight: bold;
+            min-height: 30px;
+        }
+
+        .controls {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .btn {
+            background: #69ad6c;
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: center;
+            line-height: 1.2;
+        }
+
+        .btn:hover {
+            background: #5a9960;
+            transform: translateY(-2px);
+        }
+
+        .btn:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .right-column {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .answer-grid {
+            display: grid;
+            grid-template-columns: repeat(6, 1fr);
+            gap: 8px;
+            width: 100%;
+            max-width: 480px;
+            aspect-ratio: 1;
+        }
+
+        .grid-cell {
+            background: white;
+            border: 1px solid #383962;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            font-weight: bold;
+            color: #383962;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            aspect-ratio: 1;
+        }
+
+        .grid-cell:hover {
+            background: #f0f8f0;
+            transform: scale(1.05);
+        }
+
+        .grid-cell.highlighted {
+            background: #69ad6c;
+            color: white;
+            transform: scale(0.95);
+        }
+
+        .copyright {
+            position: absolute;
+            bottom: 5px;
+            right: 10px;
+            color: #383962;
+            font-size: 10px;
+            z-index: 10;
+        }
+
+        @media (max-height: 700px) {
+            .equation-text {
+                font-size: 36px;
+            }
+            
+            .grid-cell {
+                font-size: 16px;
+            }
+            
+            .answer-display {
+                font-size: 20px;
+            }
+            
+            .game-container {
+                padding: 15px;
+                gap: 15px;
+            }
+        }
+
+        @media (max-width: 900px) {
+            .game-container {
+                flex-direction: column;
+                aspect-ratio: 9/16;
+                gap: 15px;
+            }
+            
+            .left-column {
+                flex: 0 0 auto;
+            }
+            
+            .right-column {
+                flex: 1;
+            }
+            
+            .equation-text {
+                font-size: 32px;
+            }
+            
+            .grid-cell {
+                font-size: 14px;
+            }
+        }
+
+        /* Iframe-specific adjustments */
+        @media (max-height: 500px) {
+            body {
+                padding: 5px;
+            }
+            
+            .game-container {
+                padding: 10px;
+                gap: 10px;
+                border-radius: 10px;
+            }
+            
+            .equation-text {
+                font-size: 28px;
+            }
+            
+            .grid-cell {
+                font-size: 12px;
+            }
+            
+            .btn {
+                padding: 8px 15px;
+                font-size: 12px;
+            }
+            
+            .instructions {
+                padding: 10px;
+                font-size: 12px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="game-container">
+        <div class="left-column">
+            <div class="branding-space">
+                <div class="instructions">
+                    <h3>INSTRUCTIONS</h3>
+                    <ol>
+                        <li>Look at the two algebraic terms displayed</li>
+                        <li>Find their Greatest Common Factor (GCF)</li>
+                        <li>Click "Show Answer" to reveal the solution</li>
+                        <li>Click "Next Question" to continue</li>
+                    </ol>
+                </div>
+            </div>
+            
+            <div class="equation-container">
+                <div class="question-counter">Question <span id="questionNumber">1</span>/36</div>
+                <div class="equation-text" id="questionDisplay">Click "Next Question" to start!</div>
+                <div class="answer-display" id="answerDisplay"></div>
+            </div>
+            
+            <div class="controls">
+                <button class="btn" id="showAnswerBtn" onclick="showAnswer()" disabled>Show<br>Answer</button>
+                <button class="btn" id="nextQuestionBtn" onclick="nextQuestion()">Next<br>Question</button>
+                <button class="btn" onclick="restartGame()">Restart<br>Game</button>
+            </div>
+        </div>
+        
+        <div class="right-column">
+            <div class="answer-grid" id="answerGrid"></div>
+        </div>
+        
+        <div class="copyright">© Mind the Gap Tutoring 2025</div>
+    </div>
+
+    <script>
+        // Game state
+        let currentQuestionIndex = 0;
+        let questionsOrder = [];
+        let answerShown = false;
+
+        // GCF Problems data
+        const gcfProblems = [
+            {term1: '6x', term2: '9x', gcf: '3x'},
+            {term1: '4a²', term2: '6a', gcf: '2a'},
+            {term1: '8y', term2: '12y', gcf: '4y'},
+            {term1: '15m³', term2: '25m', gcf: '5m'},
+            {term1: '4x²', term2: '6x', gcf: '2x'},
+            {term1: '14b', term2: '21b²', gcf: '7b'},
+            {term1: '4y²', term2: '6y', gcf: '2y'},
+            {term1: '9p²', term2: '12p', gcf: '3p'},
+            {term1: '18x', term2: '27x²', gcf: '9x'},
+            {term1: '20a³', term2: '30a', gcf: '10a'},
+            {term1: '12xy', term2: '18x', gcf: '6x'},
+            {term1: '15b²', term2: '25b', gcf: '5b'},
+            {term1: '8m³', term2: '12m²', gcf: '4m²'},
+            {term1: '21x²', term2: '14x', gcf: '7x'},
+            {term1: '16ab', term2: '24a', gcf: '8a'},
+            {term1: '10y²', term2: '15y', gcf: '5y'},
+            {term1: '28p', term2: '35p³', gcf: '7p'},
+            {term1: '12x²y', term2: '18xy', gcf: '6xy'},
+            {term1: '24m²', term2: '36m', gcf: '12m'},
+            {term1: '26ab', term2: '39a', gcf: '13a'},
+            {term1: '8x³', term2: '12x', gcf: '4x'},
+            {term1: '30y', term2: '45y²', gcf: '15y'},
+            {term1: '4m²', term2: '6m', gcf: '2m'},
+            {term1: '18b²', term2: '27b', gcf: '9b'},
+            {term1: '22xy', term2: '33y', gcf: '11y'},
+            {term1: '12p³', term2: '18p²', gcf: '6p²'},
+            {term1: '34a', term2: '51a²', gcf: '17a'},
+            {term1: '20x²y', term2: '30xy', gcf: '10xy'},
+            {term1: '6m²', term2: '9m', gcf: '3m'},
+            {term1: '32b', term2: '48b³', gcf: '16b'},
+            {term1: '22x²', term2: '33x', gcf: '11x'},
+            {term1: '6a²', term2: '9a', gcf: '3a'},
+            {term1: '28y', term2: '42y²', gcf: '14y'},
+            {term1: '12mn²', term2: '16m', gcf: '4m'},
+            {term1: '36x', term2: '48x²', gcf: '12x'},
+            {term1: '22p²q', term2: '33p', gcf: '11p'}
+        ];
+
+        // Answer grid content - all possible GCF answers
+        const gridAnswers = [
+            '3x', '2a', '4y', '5m', '2x', '7b',
+            '2y', '3p', '9x', '10a', '6x', '5b',
+            '4m²', '7x', '8a', '5y', '7p', '6xy',
+            '12m', '13a', '4x', '15y', '2m', '9b',
+            '11y', '6p²', '17a', '10xy', '3m', '16b',
+            '11x', '3a', '14y', '4m', '12x', '11p'
+        ];
+
+        // Initialize game
+        function initGame() {
+            createAnswerGrid();
+            resetGame();
+        }
+
+        // Create answer grid
+        function createAnswerGrid() {
+            const grid = document.getElementById('answerGrid');
+            grid.innerHTML = '';
+            
+            gridAnswers.forEach((answer, index) => {
+                const cell = document.createElement('div');
+                cell.className = 'grid-cell';
+                cell.textContent = answer;
+                cell.id = `cell-${index}`;
+                grid.appendChild(cell);
+            });
+        }
+
+        // Shuffle array
+        function shuffleArray(array) {
+            const shuffled = [...array];
+            for (let i = shuffled.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+            }
+            return shuffled;
+        }
+
+        // Reset game
+        function resetGame() {
+            questionsOrder = shuffleArray([...Array(gcfProblems.length).keys()]);
+            currentQuestionIndex = 0;
+            answerShown = false;
+            
+            // Clear all highlights
+            document.querySelectorAll('.grid-cell').forEach(cell => {
+                cell.classList.remove('highlighted');
+            });
+            
+            updateDisplay();
+        }
+
+        // Show answer
+        function showAnswer() {
+            if (currentQuestionIndex >= questionsOrder.length) return;
+            
+            const problemIndex = questionsOrder[currentQuestionIndex];
+            const problem = gcfProblems[problemIndex];
+            
+            document.getElementById('answerDisplay').textContent = `GCF = ${problem.gcf}`;
+            
+            // Highlight the answer in the grid
+            const answerIndex = gridAnswers.indexOf(problem.gcf);
+            if (answerIndex !== -1) {
+                document.getElementById(`cell-${answerIndex}`).classList.add('highlighted');
+            }
+            
+            answerShown = true;
+            currentQuestionIndex++; // Move to next question after showing answer
+            document.getElementById('showAnswerBtn').disabled = true;
+            document.getElementById('nextQuestionBtn').disabled = false;
+        }
+
+        // Next question
+        function nextQuestion() {
+            if (currentQuestionIndex < questionsOrder.length) {
+                const problemIndex = questionsOrder[currentQuestionIndex];
+                const problem = gcfProblems[problemIndex];
+                
+                document.getElementById('questionDisplay').innerHTML = `${problem.term1}<br>${problem.term2}`;
+                document.getElementById('answerDisplay').textContent = '';
+                
+                answerShown = false;
+                
+                document.getElementById('showAnswerBtn').disabled = false;
+                document.getElementById('nextQuestionBtn').disabled = true;
+                
+                updateDisplay();
+            } else {
+                document.getElementById('nextQuestionBtn').innerHTML = 'Game<br>Complete!';
+                document.getElementById('nextQuestionBtn').disabled = true;
+                document.getElementById('showAnswerBtn').disabled = true;
+            }
+        }
+
+        // Update display
+        function updateDisplay() {
+            document.getElementById('questionNumber').textContent = currentQuestionIndex + 1;
+        }
+
+        // Restart game
+        function restartGame() {
+            document.getElementById('questionDisplay').textContent = 'Click "Next Question" to start!';
+            document.getElementById('answerDisplay').textContent = '';
+            document.getElementById('showAnswerBtn').disabled = true;
+            document.getElementById('nextQuestionBtn').disabled = false;
+            document.getElementById('nextQuestionBtn').innerHTML = 'Next<br>Question';
+            
+            resetGame();
+        }
+
+        // Initialize game on load
+        window.onload = initGame;
+    </script>
+</body>
+</html>
