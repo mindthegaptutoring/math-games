@@ -192,6 +192,89 @@
             width: auto;
         }
 
+        /* Desktop Logo Optimization */
+        @media (min-width: 768px) {
+            .logo img {
+                height: 80px; /* Larger for desktop password screen */
+            }
+            
+            .game-logo img {
+                height: 60px; /* Larger for desktop game screen */
+            }
+        }
+
+        @media (min-width: 1200px) {
+            .logo img {
+                height: 100px; /* Even larger for large desktop screens */
+            }
+            
+            .game-logo img {
+                height: 70px; /* Optimal size for large desktop game screen */
+            }
+        }
+
+        /* Desktop Game Board Optimization */
+        @media (min-width: 900px) {
+            .game-container {
+                max-width: 1400px; /* Larger container for desktop */
+                padding: 40px;
+            }
+            
+            .equation-text {
+                font-size: 64px; /* Larger equation text */
+            }
+            
+            .answer-display {
+                font-size: 32px; /* Larger answer display */
+            }
+            
+            .answer-grid {
+                max-width: 600px; /* 25% bigger grid (480px -> 600px) */
+                gap: 12px; /* Larger gaps */
+            }
+            
+            .grid-cell {
+                font-size: 28px; /* Much larger grid text */
+                border-radius: 12px;
+            }
+            
+            .game-logo img {
+                height: 120px; /* Double the logo size on desktop */
+            }
+            
+            .question-counter {
+                font-size: 16px;
+                padding: 8px 15px;
+            }
+            
+            .btn {
+                padding: 15px 25px;
+                font-size: 16px;
+            }
+        }
+
+        @media (min-width: 1400px) {
+            .game-container {
+                max-width: 1600px; /* Even larger for very large screens */
+            }
+            
+            .equation-text {
+                font-size: 72px; /* Even larger for big desktop screens */
+            }
+            
+            .answer-grid {
+                max-width: 650px; /* Slightly bigger for large screens */
+            }
+            
+            .grid-cell {
+                font-size: 32px; /* Even larger grid text */
+            }
+            
+            .game-logo img {
+                height: 140px; /* Extra large logo for big screens */
+            }
+        }
+
         /* Game Styles - Hidden until password is correct */
         .game-container {
             background: white;
