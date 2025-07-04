@@ -8,6 +8,7 @@
     <title>Greatest Common Factor Bingo</title>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;700&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Gagalin&display=swap');
         
         * {
             margin: 0;
@@ -192,41 +193,34 @@
             width: auto;
         }
 
-        /* Game Title Styles */
-        .game-title {
-            text-align: center;
-            background: linear-gradient(135deg, #383962, #69ad6c);
-            color: white;
-            padding: 15px 20px;
-            margin: -20px -20px 20px -20px;
-            border-radius: 20px 20px 0 0;
-            font-size: 28px;
-            font-weight: bold;
-            letter-spacing: 1px;
-        }
-
-        .password-title {
-            text-align: center;
-            background: linear-gradient(135deg, #383962, #69ad6c);
-            color: white;
-            padding: 15px 20px;
-            margin: -40px -40px 30px -40px;
-            border-radius: 20px 20px 0 0;
-            font-size: 24px;
-            font-weight: bold;
-            letter-spacing: 1px;
+        /* Game Title Overlay Styles */
+        .game-title-overlay {
+            position: absolute;
+            top: 20px;
+            right: 30px;
+            font-family: 'Gagalin', cursive;
+            font-size: 32px;
+            font-weight: normal;
+            color: #383962;
+            text-align: right;
+            z-index: 100;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.1);
+            line-height: 1.1;
         }
 
         @media (min-width: 900px) {
-            .game-title {
-                font-size: 36px;
-                padding: 20px 30px;
-                margin: -40px -40px 30px -40px;
+            .game-title-overlay {
+                font-size: 42px;
+                top: 30px;
+                right: 50px;
             }
-            
-            .password-title {
-                font-size: 32px;
-                padding: 20px 30px;
+        }
+
+        @media (max-width: 768px) {
+            .game-title-overlay {
+                font-size: 24px;
+                top: 15px;
+                right: 20px;
             }
         }
 
@@ -467,9 +461,9 @@
         .answer-grid {
             display: grid;
             grid-template-columns: repeat(6, 1fr);
-            gap: 8px;
+            gap: 6px;
             width: 100%;
-            max-width: 480px;
+            max-width: 600px;
             aspect-ratio: 1;
         }
 
@@ -586,7 +580,6 @@
 <body>
     <!-- Password Protection Screen -->
     <div class="password-container" id="passwordScreen">
-        <div class="password-title">GREATEST COMMON FACTOR BINGO!</div>
         <div class="logo">
             <img src="mind-the-gap-primary-logo-full-color-rgb-900px-w-72ppi.png" alt="Mind The Gap Tutoring" />
         </div>
@@ -607,7 +600,7 @@
 
     <!-- Game Content - Hidden until password is correct -->
     <div class="game-container" id="gameContainer">
-        <div class="game-title">GREATEST COMMON FACTOR BINGO!</div>
+        <div class="game-title-overlay">GREATEST COMMON FACTOR BINGO!</div>
         <div class="left-column">
             <div class="branding-space">
                 <div class="logo game-logo">
