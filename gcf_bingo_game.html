@@ -229,13 +229,14 @@
             }
             
             .answer-grid {
-                max-width: 600px; /* 25% bigger grid (480px -> 600px) */
-                gap: 12px; /* Larger gaps */
+                max-width: 720px; /* Even bigger grid (600px -> 720px) */
+                gap: 15px; /* Larger gaps */
             }
             
             .grid-cell {
-                font-size: 28px; /* Much larger grid text */
+                font-size: 32px; /* Larger grid text */
                 border-radius: 12px;
+                border-width: 2px; /* Thicker borders for desktop */
             }
             
             .game-logo img {
@@ -263,11 +264,11 @@
             }
             
             .answer-grid {
-                max-width: 650px; /* Slightly bigger for large screens */
+                max-width: 780px; /* Even bigger for large screens */
             }
             
             .grid-cell {
-                font-size: 32px; /* Even larger grid text */
+                font-size: 36px; /* Extra large grid text */
             }
             
             .game-logo img {
@@ -404,6 +405,18 @@
             background: #ccc;
             cursor: not-allowed;
             transform: none;
+        }
+
+        .btn.restart {
+            background: white;
+            color: #383962;
+            border: 2px solid #383962;
+        }
+
+        .btn.restart:hover {
+            background: #f8f9fa;
+            color: #383962;
+            border-color: #383962;
         }
 
         .right-column {
@@ -580,7 +593,7 @@
             <div class="controls">
                 <button class="btn" id="showAnswerBtn" onclick="showAnswer()" disabled>Show<br>Answer</button>
                 <button class="btn" id="nextQuestionBtn" onclick="nextQuestion()">Next<br>Question</button>
-                <button class="btn" onclick="restartGame()">Restart<br>Game</button>
+                <button class="btn restart" onclick="restartGame()">Restart<br>Game</button>
             </div>
         </div>
         
