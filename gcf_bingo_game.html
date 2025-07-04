@@ -192,6 +192,44 @@
             width: auto;
         }
 
+        /* Game Title Styles */
+        .game-title {
+            text-align: center;
+            background: linear-gradient(135deg, #383962, #69ad6c);
+            color: white;
+            padding: 15px 20px;
+            margin: -20px -20px 20px -20px;
+            border-radius: 20px 20px 0 0;
+            font-size: 28px;
+            font-weight: bold;
+            letter-spacing: 1px;
+        }
+
+        .password-title {
+            text-align: center;
+            background: linear-gradient(135deg, #383962, #69ad6c);
+            color: white;
+            padding: 15px 20px;
+            margin: -40px -40px 30px -40px;
+            border-radius: 20px 20px 0 0;
+            font-size: 24px;
+            font-weight: bold;
+            letter-spacing: 1px;
+        }
+
+        @media (min-width: 900px) {
+            .game-title {
+                font-size: 36px;
+                padding: 20px 30px;
+                margin: -40px -40px 30px -40px;
+            }
+            
+            .password-title {
+                font-size: 32px;
+                padding: 20px 30px;
+            }
+        }
+
         /* Desktop Logo Optimization */
         @media (min-width: 768px) {
             .logo img {
@@ -431,7 +469,7 @@
             grid-template-columns: repeat(6, 1fr);
             gap: 8px;
             width: 100%;
-            max-width: 600px;
+            max-width: 480px;
             aspect-ratio: 1;
         }
 
@@ -548,6 +586,7 @@
 <body>
     <!-- Password Protection Screen -->
     <div class="password-container" id="passwordScreen">
+        <div class="password-title">GREATEST COMMON FACTOR BINGO!</div>
         <div class="logo">
             <img src="mind-the-gap-primary-logo-full-color-rgb-900px-w-72ppi.png" alt="Mind The Gap Tutoring" />
         </div>
@@ -568,6 +607,7 @@
 
     <!-- Game Content - Hidden until password is correct -->
     <div class="game-container" id="gameContainer">
+        <div class="game-title">GREATEST COMMON FACTOR BINGO!</div>
         <div class="left-column">
             <div class="branding-space">
                 <div class="logo game-logo">
