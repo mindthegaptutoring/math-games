@@ -272,7 +272,7 @@
             }
             
             .game-logo img {
-                height: 120px; /* Double the logo size on desktop */
+                height: 45px; /* 25% smaller: was 60px, now 45px */
             }
             
             .question-counter {
@@ -304,7 +304,7 @@
             }
             
             .game-logo img {
-                height: 140px; /* Extra large logo for big screens */
+                height: 53px; /* 25% smaller: was 70px, now 53px */
             }
         }
 
@@ -342,6 +342,12 @@
             align-items: center;
             justify-content: center;
             flex-direction: column;
+        }
+
+        @media (min-width: 900px) {
+            .branding-space {
+                align-items: center; /* Center everything horizontally */
+            }
         }
 
         .instructions {
@@ -461,9 +467,9 @@
         .answer-grid {
             display: grid;
             grid-template-columns: repeat(6, 1fr);
-            gap: 6px;
+            gap: 8px;
             width: 100%;
-            max-width: 600px;
+            max-width: 480px;
             aspect-ratio: 1;
         }
 
