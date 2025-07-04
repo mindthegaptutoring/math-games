@@ -31,6 +31,168 @@
             box-sizing: border-box;
         }
 
+        /* Password Protection Styles */
+        .password-container {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            text-align: center;
+            max-width: 400px;
+            width: 100%;
+        }
+
+        .password-container h2 {
+            color: #383962;
+            margin-bottom: 20px;
+            font-size: 24px;
+        }
+
+        .password-container p {
+            color: #666;
+            margin-bottom: 25px;
+            line-height: 1.5;
+        }
+
+        .password-input {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid #e9ecef;
+            border-radius: 10px;
+            font-size: 16px;
+            margin-bottom: 20px;
+            text-align: center;
+            font-family: 'Nunito', sans-serif;
+        }
+
+        .password-input:focus {
+            outline: none;
+            border-color: #69ad6c;
+        }
+
+        .password-btn {
+            background: #69ad6c;
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            width: 100%;
+            font-family: 'Nunito', sans-serif;
+        }
+
+        .password-btn:hover {
+            background: #5a9960;
+        }
+
+        .error-message {
+            color: #dc3545;
+            margin-top: 15px;
+            font-weight: bold;
+        }
+
+        /* Logo Styles */
+        .logo {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 24px;
+            color: #383962;
+            margin-bottom: 20px;
+            font-family: 'Nunito', sans-serif;
+        }
+
+        .logo-text {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .logo-pencil {
+            width: 24px;
+            height: 6px;
+            background: #69ad6c;
+            border-radius: 3px;
+            position: relative;
+        }
+
+        .logo-pencil::before {
+            content: '';
+            position: absolute;
+            left: -6px;
+            top: 1px;
+            width: 0;
+            height: 0;
+            border-top: 2px solid transparent;
+            border-bottom: 2px solid transparent;
+            border-right: 6px solid #69ad6c;
+        }
+
+        .logo-pencil::after {
+            content: '';
+            position: absolute;
+            right: -4px;
+            top: 2px;
+            width: 0;
+            height: 0;
+            border-top: 1px solid transparent;
+            border-bottom: 1px solid transparent;
+            border-left: 4px solid #555;
+        }
+
+        .game-logo {
+            font-size: 18px;
+            margin-bottom: 15px;
+        }
+
+        .game-logo .logo-pencil {
+            width: 18px;
+            height: 4px;
+        }
+
+        .game-logo .logo-pencil::before {
+            left: -4px;
+            border-right: 4px solid #69ad6c;
+            border-top: 1.5px solid transparent;
+            border-bottom: 1.5px solid transparent;
+        }
+
+        .member-info {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            border-left: 4px solid #69ad6c;
+            font-size: 14px;
+            color: #666;
+        }
+
+        /* Logo Styles */
+        .logo {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 20px;
+        }
+
+        .logo img {
+            height: 50px;
+            width: auto;
+        }
+
+        .game-logo {
+            margin-bottom: 15px;
+        }
+
+        .game-logo img {
+            height: 35px;
+            width: auto;
+        }
+
+        /* Game Styles - Hidden until password is correct */
         .game-container {
             background: white;
             border-radius: 20px;
@@ -41,10 +203,14 @@
             max-width: 100%;
             max-height: 100%;
             aspect-ratio: 16/9;
-            display: flex;
+            display: none;
             gap: 20px;
             box-sizing: border-box;
             position: relative;
+        }
+
+        .game-container.unlocked {
+            display: flex;
         }
 
         .left-column {
@@ -284,9 +450,33 @@
     </style>
 </head>
 <body>
-    <div class="game-container">
+    <!-- Password Protection Screen -->
+    <div class="password-container" id="passwordScreen">
+        <div class="logo">
+            <img src="mind-the-gap-primary-logo-full-color-rgb-900px-w-72ppi.png" alt="Mind The Gap Tutoring" />
+        </div>
+        <h2>🔐 Member Access Required</h2>
+        <div class="member-info">
+            <strong>This game is exclusive to Mind the Gap Tutoring members!</strong><br>
+            Enter your member password to access the GCF Bingo game.
+        </div>
+        <p>Please enter the password provided in your membership area:</p>
+        <input type="password" 
+               class="password-input" 
+               id="passwordInput" 
+               placeholder="Enter member password"
+               onkeypress="if(event.key==='Enter') checkPassword()">
+        <button class="password-btn" onclick="checkPassword()">🚀 Access Game</button>
+        <div class="error-message" id="errorMessage"></div>
+    </div>
+
+    <!-- Game Content - Hidden until password is correct -->
+    <div class="game-container" id="gameContainer">
         <div class="left-column">
             <div class="branding-space">
+                <div class="logo game-logo">
+                    <img src="mind-the-gap-primary-logo-full-color-rgb-900px-w-72ppi.png" alt="Mind The Gap Tutoring" />
+                </div>
                 <div class="instructions">
                     <h3>INSTRUCTIONS</h3>
                     <ol>
@@ -315,10 +505,30 @@
             <div class="answer-grid" id="answerGrid"></div>
         </div>
         
-        <div class="copyright">© Mind the Gap Tutoring 2025</div>
+        <div class="copyright">(c) Mind The Gap Tutoring 2025</div>
     </div>
 
     <script>
+        // Password protection
+        const MEMBER_PASSWORD = "MATH2025GCF"; // Change this to your desired password
+        
+        function checkPassword() {
+            const inputPassword = document.getElementById('passwordInput').value;
+            const errorMessage = document.getElementById('errorMessage');
+            
+            if (inputPassword === MEMBER_PASSWORD) {
+                // Correct password - show game
+                document.getElementById('passwordScreen').style.display = 'none';
+                document.getElementById('gameContainer').classList.add('unlocked');
+                initGame();
+            } else {
+                // Wrong password - show error
+                errorMessage.textContent = '❌ Incorrect password. Please check your membership area for the correct password.';
+                document.getElementById('passwordInput').value = '';
+                document.getElementById('passwordInput').focus();
+            }
+        }
+
         // Game state
         let currentQuestionIndex = 0;
         let questionsOrder = [];
@@ -477,8 +687,10 @@
             resetGame();
         }
 
-        // Initialize game on load
-        window.onload = initGame;
+        // Focus password input on page load
+        window.onload = function() {
+            document.getElementById('passwordInput').focus();
+        };
     </script>
 </body>
 </html>
