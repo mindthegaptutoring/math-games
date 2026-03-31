@@ -1,0 +1,617 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Alchemist's Scale</title>
+<link href="https://fonts.googleapis.com/css2?family=Raleway:ital,wght@0,600;0,700;0,800;0,900;1,700&family=Nunito:ital,wght@0,400;0,600;0,700;1,400;1,600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --jungle:      #1a2e1a;
+  --moss:        #2d4a1e;
+  --stone:       #2a2318;
+  --stone-mid:   #3d3224;
+  --stone-lt:    #544535;
+  --copper:      #c47a3a;
+  --copper-dk:   #8a4e1e;
+  --copper-lt:   #dfa060;
+  --gold:        #c9a84c;
+  --gold-lt:     #e8c97a;
+  --teal:        #5ececa;
+  --teal-dk:     #3aa6a0;
+  --parch:       #f5e6c8;
+  --parch-dim:   rgba(245,230,200,0.72);
+  --red:         #c0392b;
+  --green-ok:    #4ecb71;
+}
+*,*::before,*::after { margin:0; padding:0; box-sizing:border-box; }
+
+body {
+  font-family: 'Nunito', sans-serif;
+  background: var(--jungle);
+  color: var(--parch);
+  min-height: 100vh;
+  display: flex; align-items: center; justify-content: center;
+  position: relative; overflow: hidden;
+}
+body::before {
+  content:''; position:fixed; inset:0;
+  background:
+    radial-gradient(ellipse at 15% 15%, rgba(45,74,30,.65) 0%, transparent 50%),
+    radial-gradient(ellipse at 85% 85%, rgba(26,46,26,.80) 0%, transparent 50%),
+    radial-gradient(ellipse at 50% 50%, rgba(42,35,24,.35) 0%, transparent 70%);
+  pointer-events:none; z-index:0;
+}
+.firefly {
+  position:fixed; width:3px; height:3px; border-radius:50%;
+  background:rgba(232,201,122,.75); box-shadow:0 0 5px rgba(232,201,122,.7);
+  animation:drift linear infinite; pointer-events:none; z-index:0;
+}
+@keyframes drift {
+  0%   { transform:translate(0,0) scale(1); opacity:0; }
+  10%  { opacity:1; }
+  50%  { transform:translate(var(--dx),var(--dy)) scale(1.4); opacity:.8; }
+  90%  { opacity:.4; }
+  100% { transform:translate(calc(var(--dx)*2),calc(var(--dy)*2)) scale(.8); opacity:0; }
+}
+.glow-top {
+  position:fixed; top:-100px; left:50%; transform:translateX(-50%);
+  width:550px; height:280px;
+  background:radial-gradient(ellipse, rgba(196,122,58,.1) 0%, transparent 70%);
+  pointer-events:none; z-index:0;
+}
+.game-wrap { position:relative; z-index:10; width:min(640px,96vw); display:flex; flex-direction:column; }
+.attribution { text-align:center; font-family:'Raleway',sans-serif; font-size:.58rem; letter-spacing:.35em; color:rgba(201,168,76,.5); text-transform:uppercase; margin-bottom:7px; }
+
+.card {
+  background:linear-gradient(145deg, rgba(84,69,53,.96) 0%, rgba(61,50,36,.98) 40%, rgba(42,35,24,1) 100%);
+  border:1.5px solid rgba(201,168,76,.25); border-radius:5px;
+  padding:30px 36px 36px;
+  box-shadow:0 0 0 1px rgba(201,168,76,.08), 0 8px 45px rgba(0,0,0,.75), inset 0 1px 0 rgba(201,168,76,.09), inset 0 -1px 0 rgba(0,0,0,.3);
+  position:relative; overflow:hidden;
+}
+.card::before { content:''; position:absolute; top:0; left:0; right:0; height:1px; background:linear-gradient(90deg,transparent,rgba(201,168,76,.3),transparent); }
+.card::after {
+  content:''; position:absolute; inset:0;
+  background-image:
+    repeating-linear-gradient(87deg,transparent,transparent 65px,rgba(0,0,0,.025) 65px,rgba(0,0,0,.025) 66px),
+    repeating-linear-gradient(3deg,transparent,transparent 80px,rgba(0,0,0,.018) 80px,rgba(0,0,0,.018) 81px);
+  pointer-events:none;
+}
+
+.progress-wrap { display:flex; align-items:center; gap:12px; margin-bottom:22px; }
+.prog-label { font-family:'Raleway',sans-serif; font-size:.68rem; letter-spacing:.18em; color:rgba(201,168,76,.45); text-transform:uppercase; white-space:nowrap; }
+.prog-track { flex:1; height:4px; background:rgba(0,0,0,.4); border-radius:2px; border:1px solid rgba(201,168,76,.07); }
+.prog-fill { height:100%; background:linear-gradient(90deg,var(--copper-dk),var(--copper),var(--copper-lt)); border-radius:2px; transition:width .65s ease; box-shadow:0 0 6px var(--copper-dk); }
+.prog-count { font-family:'Raleway',sans-serif; font-size:.68rem; letter-spacing:.08em; color:rgba(201,168,76,.45); white-space:nowrap; }
+
+.chamber-hdr { text-align:center; margin-bottom:16px; }
+.floor-lbl { font-family:'Raleway',sans-serif; font-size:.68rem; letter-spacing:.3em; color:rgba(201,168,76,.42); text-transform:uppercase; margin-bottom:5px; }
+.chamber-name { font-family:'Raleway',sans-serif; font-size:1.6rem; font-weight:800; color:var(--copper-lt); text-shadow:0 0 20px rgba(196,122,58,.28); line-height:1.2; }
+
+.dvdr { display:flex; align-items:center; gap:10px; margin:13px 0; }
+.dvdr-line { flex:1; height:1px; background:linear-gradient(90deg,transparent,rgba(201,168,76,.18),transparent); }
+.dvdr-dia { width:5px; height:5px; background:rgba(201,168,76,.45); transform:rotate(45deg); }
+
+.story { font-style:italic; font-size:1.08rem; line-height:1.8; color:var(--parch-dim); margin-bottom:16px; padding:13px 17px; background:rgba(0,0,0,.22); border-left:2px solid rgba(201,168,76,.2); border-radius:0 3px 3px 0; }
+
+/* ── SCALE ── */
+.scale-wrap { position:relative; width:320px; height:185px; margin:0 auto 16px; }
+.beam-outer { position:absolute; top:38px; left:50%; width:240px; height:9px; transform:translateX(-50%); }
+.beam { width:100%; height:100%; background:linear-gradient(90deg,var(--copper-dk),var(--copper-lt),var(--copper-dk)); border-radius:5px; transform:rotate(10deg); transform-origin:center center; transition:transform .85s cubic-bezier(.34,1.56,.64,1); position:relative; }
+.beam::after { content:''; position:absolute; top:50%; left:50%; transform:translate(-50%,-50%) rotate(45deg); width:11px; height:11px; background:var(--gold-lt); box-shadow:0 0 8px var(--gold); }
+.pillar { position:absolute; top:47px; left:50%; transform:translateX(-50%); display:flex; flex-direction:column; align-items:center; pointer-events:none; }
+.post { width:7px; height:78px; background:linear-gradient(90deg,var(--copper-dk),var(--copper-lt),var(--copper-dk)); border-radius:2px; }
+.base { width:120px; height:13px; background:linear-gradient(90deg,var(--copper-dk),var(--copper),var(--copper-dk)); border-radius:7px; box-shadow:0 4px 10px rgba(0,0,0,.5); }
+.sc-side { position:absolute; top:47px; display:flex; flex-direction:column; align-items:center; transition:transform .85s cubic-bezier(.34,1.56,.64,1); }
+.sc-side-l { left:0;  transform:translateY(-22px); }
+.sc-side-r { right:0; transform:translateY(22px); }
+.chain { width:2px; height:34px; background:linear-gradient(180deg,var(--copper-dk),rgba(196,122,58,.2)); }
+.pan { width:106px; min-height:52px; background:rgba(26,30,20,.85); border:1.5px solid rgba(201,168,76,.2); border-radius:5px 5px 22px 22px; display:flex; align-items:center; justify-content:center; padding:10px 7px; transition:border-color .4s, box-shadow .4s; }
+.pan-expr { font-family:'Raleway',sans-serif; font-size:1.12rem; font-weight:700; color:var(--parch); letter-spacing:.04em; text-align:center; line-height:1.3; }
+
+.scale-balanced .beam { transform:rotate(0deg); }
+.scale-balanced .sc-side-l, .scale-balanced .sc-side-r { transform:translateY(0); }
+.scale-balanced .pan { border-color:rgba(94,206,202,.55); box-shadow:0 0 14px rgba(94,206,202,.2); }
+.scale-balanced .pan-expr { color:var(--teal); }
+.scale-wrong .beam { animation:beamShake .55s ease forwards; }
+@keyframes beamShake { 0%{transform:rotate(10deg)} 20%{transform:rotate(24deg)} 40%{transform:rotate(4deg)} 60%{transform:rotate(19deg)} 80%{transform:rotate(8deg)} 100%{transform:rotate(10deg)} }
+
+/* ── ANSWERS ── */
+.question-txt { font-size:1.22rem; font-weight:600; color:var(--parch); line-height:1.65; margin-bottom:18px; }
+.answers { display:grid; grid-template-columns:1fr 1fr; gap:9px; margin-bottom:6px; }
+.ans-btn { font-family:'Nunito',sans-serif; font-size:1.12rem; font-weight:600; padding:13px 14px; background:rgba(0,0,0,.22); border:1.5px solid rgba(201,168,76,.16); border-radius:3px; color:var(--parch); cursor:pointer; transition:all .17s ease; display:flex; align-items:center; gap:10px; text-align:left; }
+.ans-btn:hover:not(:disabled) { background:rgba(201,168,76,.1); border-color:rgba(201,168,76,.38); transform:translateY(-1px); }
+.ans-ltr { font-family:'Raleway',sans-serif; font-size:.72rem; color:rgba(201,168,76,.5); width:18px; flex-shrink:0; }
+.ans-btn.correct { background:rgba(78,203,113,.15); border-color:var(--green-ok); color:#b0f4c8; animation:popIn .38s ease; }
+.ans-btn.wrong   { background:rgba(192,57,43,.12);  border-color:var(--red); color:rgba(245,230,200,.35); animation:jiggle .35s ease; }
+.ans-btn:disabled { cursor:default; }
+@keyframes popIn  { 0%{transform:scale(1)} 50%{transform:scale(1.03)} 100%{transform:scale(1)} }
+@keyframes jiggle { 0%,100%{transform:translateX(0)} 25%{transform:translateX(-5px)} 75%{transform:translateX(5px)} }
+
+.type-badge { display:inline-block; font-family:'Raleway',sans-serif; font-size:.65rem; letter-spacing:.2em; text-transform:uppercase; padding:3px 10px; margin-bottom:10px; border:1px solid rgba(94,206,202,.28); border-radius:2px; color:rgba(94,206,202,.6); background:rgba(94,206,202,.05); }
+.typed-row { display:flex; gap:9px; margin-bottom:6px; }
+.typed-in { flex:1; font-family:'Raleway',sans-serif; font-size:1.25rem; font-weight:700; letter-spacing:.04em; padding:13px 16px; background:rgba(0,0,0,.28); border:1.5px solid rgba(201,168,76,.2); border-radius:3px; color:var(--parch); outline:none; transition:border-color .2s, box-shadow .2s; }
+.typed-in::placeholder { color:rgba(245,230,200,.2); font-style:italic; font-weight:400; }
+.typed-in:focus { border-color:rgba(201,168,76,.52); box-shadow:0 0 0 2px rgba(201,168,76,.1); }
+.typed-in.ok  { border-color:var(--teal); background:rgba(94,206,202,.09); color:var(--teal); }
+.typed-in.bad { border-color:var(--red); animation:jiggle .35s ease; }
+.sub-btn { font-family:'Raleway',sans-serif; font-size:.72rem; letter-spacing:.15em; text-transform:uppercase; padding:13px 18px; background:rgba(201,168,76,.1); border:1.5px solid rgba(201,168,76,.24); border-radius:3px; color:var(--gold-lt); cursor:pointer; transition:all .17s ease; white-space:nowrap; }
+.sub-btn:hover:not(:disabled) { background:rgba(201,168,76,.2); border-color:var(--gold); }
+.sub-btn:disabled { opacity:.45; cursor:default; }
+.typed-hint { font-family:'Raleway',sans-serif; font-size:.65rem; letter-spacing:.1em; color:rgba(201,168,76,.3); text-align:center; margin-top:5px; }
+
+.feedback { min-height:26px; text-align:center; font-size:1.05rem; line-height:1.55; margin-top:12px; }
+.feedback.ok-msg  { color:#b0f4c8; }
+.feedback.bad-msg { color:#f0acac; }
+
+.cont-btn { display:none; margin:14px auto 0; font-family:'Raleway',sans-serif; font-size:.75rem; letter-spacing:.2em; text-transform:uppercase; padding:13px 30px; background:linear-gradient(135deg,var(--copper-dk),var(--copper)); border:none; border-radius:3px; color:var(--stone); cursor:pointer; font-weight:700; box-shadow:0 4px 14px rgba(138,78,30,.4); transition:all .2s ease; }
+.cont-btn:hover { background:linear-gradient(135deg,var(--copper),var(--copper-lt)); transform:translateY(-1px); }
+.cont-btn.show { display:block; }
+
+.screen { animation:fadeUp .42s ease; }
+@keyframes fadeUp { from{opacity:0;transform:translateY(7px)} to{opacity:1;transform:translateY(0)} }
+
+.title-scr { text-align:center; padding:6px 0; }
+.t-eyebrow { font-family:'Raleway',sans-serif; font-size:.7rem; letter-spacing:.38em; color:rgba(201,168,76,.45); text-transform:uppercase; margin-bottom:13px; }
+.t-icon { font-size:3.1rem; display:block; margin-bottom:14px; filter:drop-shadow(0 0 12px rgba(201,168,76,.4)); }
+.t-main { font-family:'Raleway',sans-serif; font-size:2.4rem; font-weight:900; color:var(--copper-lt); text-shadow:0 0 28px rgba(196,122,58,.3); margin-bottom:5px; line-height:1.1; }
+.t-tag  { font-family:'Raleway',sans-serif; font-size:.95rem; letter-spacing:.15em; color:rgba(201,168,76,.45); margin-bottom:22px; }
+.t-intro { font-size:1.1rem; line-height:1.8; color:var(--parch-dim); max-width:420px; margin:0 auto 26px; }
+.start-btn { font-family:'Raleway',sans-serif; font-size:.82rem; letter-spacing:.22em; text-transform:uppercase; padding:15px 42px; background:linear-gradient(135deg,var(--copper-dk),var(--copper),var(--copper-lt)); border:none; border-radius:3px; color:var(--stone); cursor:pointer; font-weight:700; box-shadow:0 6px 20px rgba(138,78,30,.5); transition:all .25s ease; }
+.start-btn:hover { transform:translateY(-2px); box-shadow:0 10px 26px rgba(138,78,30,.65); }
+
+/* ── TRANSITION A ── */
+.trans-scr { text-align:center; padding:4px 0; }
+.trans-headline { font-family:'Raleway',sans-serif; font-size:1.5rem; font-weight:800; color:var(--copper-lt); margin-bottom:13px; }
+.trans-body { font-size:1.08rem; line-height:1.82; color:var(--parch-dim); text-align:left; margin-bottom:18px; }
+.symbol-row { display:flex; align-items:center; justify-content:center; gap:28px; margin:0 0 20px; padding:18px; background:rgba(0,0,0,.22); border-radius:3px; border:1px solid rgba(201,168,76,.12); }
+.sym-box { text-align:center; }
+.sym-char { font-family:'Raleway',sans-serif; font-size:2.8rem; font-weight:900; display:block; line-height:1; margin-bottom:6px; }
+.sym-char.is-box { color:var(--parch); }
+.sym-char.is-n   { color:var(--teal); text-shadow:0 0 16px rgba(94,206,202,.5); }
+.sym-desc { font-family:'Raleway',sans-serif; font-size:.68rem; letter-spacing:.15em; text-transform:uppercase; color:rgba(201,168,76,.4); }
+.sym-arrow { font-size:1.6rem; color:rgba(201,168,76,.4); }
+.understand-btn { font-family:'Raleway',sans-serif; font-size:.75rem; letter-spacing:.18em; text-transform:uppercase; padding:13px 32px; background:linear-gradient(135deg,var(--teal-dk),var(--teal)); border:none; border-radius:3px; color:var(--stone); cursor:pointer; font-weight:700; box-shadow:0 4px 14px rgba(58,166,160,.4); transition:all .2s ease; }
+.understand-btn:hover { transform:translateY(-1px); box-shadow:0 6px 18px rgba(58,166,160,.58); }
+
+/* ── TRANSITION B ── */
+.level-scr { text-align:center; padding:4px 0; }
+.level-icon { font-size:2.6rem; display:block; margin-bottom:12px; }
+.level-headline { font-family:'Raleway',sans-serif; font-size:1.45rem; font-weight:800; color:var(--copper-lt); margin-bottom:12px; }
+.level-body { font-size:1.08rem; line-height:1.82; color:var(--parch-dim); text-align:left; margin-bottom:18px; }
+.level-eg { font-family:'Raleway',sans-serif; font-size:1.08rem; font-weight:600; text-align:center; color:var(--parch); padding:16px; margin-bottom:20px; background:rgba(0,0,0,.22); border-radius:3px; border:1px solid rgba(201,168,76,.12); line-height:2.2; }
+.level-eg .hi { color:var(--teal); }
+.ready-btn { font-family:'Raleway',sans-serif; font-size:.75rem; letter-spacing:.18em; text-transform:uppercase; padding:13px 32px; background:linear-gradient(135deg,var(--copper-dk),var(--copper)); border:none; border-radius:3px; color:var(--stone); cursor:pointer; font-weight:700; box-shadow:0 4px 14px rgba(138,78,30,.4); transition:all .2s ease; }
+.ready-btn:hover { transform:translateY(-1px); }
+
+/* ── WIN ── */
+.win-scr { text-align:center; padding:6px 0; }
+.win-icon { font-size:3.2rem; display:block; margin-bottom:12px; animation:float 2s ease-in-out infinite; }
+@keyframes float { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-8px)} }
+.win-title { font-family:'Raleway',sans-serif; font-size:2rem; font-weight:900; color:var(--copper-lt); text-shadow:0 0 24px rgba(196,122,58,.38); margin-bottom:11px; }
+.win-text  { font-size:1.08rem; line-height:1.78; color:var(--parch-dim); max-width:420px; margin:0 auto 20px; }
+.win-stats { display:flex; justify-content:center; gap:48px; margin-bottom:20px; }
+.stat { text-align:center; }
+.stat-n { font-family:'Raleway',sans-serif; font-size:2.1rem; font-weight:900; color:var(--copper); display:block; line-height:1; }
+.stat-l { font-size:.85rem; color:rgba(201,168,76,.45); letter-spacing:.05em; display:block; margin-top:4px; }
+.win-badge { font-family:'Raleway',sans-serif; font-size:.85rem; color:var(--gold-lt); letter-spacing:.1em; margin-bottom:20px; }
+.again-btn { font-family:'Raleway',sans-serif; font-size:.75rem; letter-spacing:.18em; text-transform:uppercase; padding:13px 34px; background:linear-gradient(135deg,var(--copper-dk),var(--copper)); border:none; border-radius:3px; color:var(--stone); cursor:pointer; font-weight:700; box-shadow:0 4px 14px rgba(138,78,30,.4); transition:all .2s ease; }
+.again-btn:hover { transform:translateY(-1px); }
+
+@media (max-width:480px) {
+  .card { padding:20px 16px 24px; }
+  .t-main { font-size:1.8rem; }
+  .answers { grid-template-columns:1fr; }
+  .scale-wrap { width:290px; }
+  .win-stats { gap:26px; }
+}
+</style>
+</head>
+<body>
+
+<div class="firefly" style="left:8%;top:20%;--dx:30px;--dy:-40px;animation-duration:9s;animation-delay:0s;"></div>
+<div class="firefly" style="left:18%;top:65%;--dx:-20px;--dy:-30px;animation-duration:13s;animation-delay:2s;"></div>
+<div class="firefly" style="left:35%;top:10%;--dx:25px;--dy:35px;animation-duration:11s;animation-delay:5s;"></div>
+<div class="firefly" style="left:60%;top:80%;--dx:-35px;--dy:-25px;animation-duration:14s;animation-delay:1s;"></div>
+<div class="firefly" style="left:75%;top:30%;--dx:20px;--dy:28px;animation-duration:10s;animation-delay:7s;"></div>
+<div class="firefly" style="left:88%;top:55%;--dx:-22px;--dy:-18px;animation-duration:12s;animation-delay:3s;"></div>
+<div class="firefly" style="left:45%;top:45%;--dx:18px;--dy:-32px;animation-duration:16s;animation-delay:4s;"></div>
+<div class="glow-top"></div>
+
+<div class="game-wrap">
+  <p class="attribution">✦ Mind the Gap Tutoring ✦</p>
+  <div class="card"><div id="gc"></div></div>
+</div>
+
+<script>
+const Qs = [
+  // ── 1 MC □  □+□=10
+  { type:'mc', floor:'Floor One', name:'The Weighing Room',
+    story:'You push open the iron door of the alchemist\'s tower and step inside. The ground floor is The Weighing Room — a copper balance scale dominates the centre, its beam creaking softly. A note reads: "The scale must balance before you may climb higher."',
+    lp:'□ + □', rp:'10',
+    q:'Both pans hold the same mystery value — □. What must □ be so the pans total 10?',
+    ans:['3','4','5','6'], cor:2,
+    exp:'✓  □ + □ = 10, so □ = 5. The beam settles perfectly — the staircase clicks open!'
+  },
+  // ── 2 MC □  3×□=12
+  { type:'mc', floor:'Floor Two', name:'The Reagent Store',
+    story:'Hundreds of glass bottles line the shelves, each filled with shimmering liquid. A recipe carved in the wall reads: "Three equal measures of Moonwater balance exactly 12 grams on the Grand Scale."',
+    lp:'3 × □', rp:'12',
+    q:'Each measure of Moonwater has the same weight — □. What is □?',
+    ans:['2','3','4','6'], cor:2,
+    exp:'✓  12 ÷ 3 = 4. Each measure weighs 4. You pour carefully — the scale rests level.'
+  },
+  // ── 3 MC □  □×4=20
+  { type:'mc', floor:'Floor Three', name:'The Crystal Vault',
+    story:'Four identical crystal shards rest in the left pan, glittering ice-blue in the torchlight. A counterweight stamped with 20 sits in the right pan. The shards must balance the counterweight exactly.',
+    lp:'□ × 4', rp:'20',
+    q:'Each crystal shard weighs □. What is □?',
+    ans:['3','4','5','8'], cor:2,
+    exp:'✓  20 ÷ 4 = 5. Each shard weighs 5. The vault door swings open.'
+  },
+  // ── 4 MC □  2×□=18
+  { type:'mc', floor:'Floor Four', name:'The Night Garden',
+    story:'Pale moonflowers bloom on every shelf. Two identical bundles of dried night-herbs sit in the left pan, balanced against 18 measures. You need to know how heavy each bundle is.',
+    lp:'2 × □', rp:'18',
+    q:'Each bundle of night-herbs weighs □. What is □?',
+    ans:['6','7','8','9'], cor:3,
+    exp:'✓  18 ÷ 2 = 9. Each bundle weighs 9. The perfume of the garden follows you upward.'
+  },
+  // ── 5 TYPED □  □×5=35
+  { type:'typed', floor:'Floor Five', name:'The Brewing Chamber',
+    story:'Five identical cauldrons sit in a row, each bubbling with deep-blue potion. Together they weigh exactly 35 measures. Find the weight of a single cauldron.',
+    lp:'□ × 5', rp:'35',
+    q:'Each cauldron weighs □. Type the value of □ to balance the scale.',
+    ca:'7',
+    exp:'✓  35 ÷ 5 = 7. Each cauldron holds 7 measures. Steam rises — the door unlocks!'
+  },
+  // ── 6 MC □  proportion 2:□=6:9
+  { type:'mc', floor:'Floor Six', name:'The River Room',
+    story:'Water flows through two stone channels. The left channel runs 2 litres for every □ buckets. The right runs 6 litres for every 9 buckets. Both rates must match for the scale to balance.',
+    lp:'2 : □', rp:'6 : 9',
+    q:'For both rates to be equal, what must □ be?',
+    ans:['2','3','4','6'], cor:1,
+    exp:'✓  6 : 9 simplifies to 2 : 3, so □ = 3. The water flows in perfect balance!'
+  },
+  // ── 7 TYPED □  proportion □:4=15:20
+  { type:'typed', floor:'Floor Seven', name:'The Star Map',
+    story:'A vast star map covers the ceiling — constellations joined by golden lines. Two ratios must match: □ stars for every 4 lines on the left, and 15 stars for every 20 lines on the right.',
+    lp:'□ : 4', rp:'15 : 20',
+    q:'Simplify 15 : 20 first, then find □.',
+    ca:'3',
+    exp:'✓  15 : 20 = 3 : 4, so □ = 3. A constellation lights up — you\'ve read the map!'
+  },
+
+  // ── TRANSITION A fires here (after index 6, before index 7) ──
+
+  // ── 8 MC n  n×3=27  (first n question)
+  { type:'mc', floor:'Floor Eight', name:'The Astrolabe Room',
+    story:'A great brass astrolabe hangs from the ceiling, spinning slowly. The alchemist\'s voice echoes: "From here, we use the true symbol. What was □ has a name now — we call it n." Three astrolabe rings balance against 27 measures.',
+    lp:'n × 3', rp:'27',
+    q:'What is n?',
+    ans:['6','7','8','9'], cor:3,
+    exp:'✓  27 ÷ 3 = 9. n = 9. The astrolabe glows gold — the next floor opens!'
+  },
+  // ── 9 MC n  5×n=40
+  { type:'mc', floor:'Floor Nine', name:'The Philosopher\'s Lab',
+    story:'Centuries of equations cover every wall, each one solved by alchemists who came before you. Five equal weights sit in the left pan, balanced against 40 on the right.',
+    lp:'5 × n', rp:'40',
+    q:'What is n?',
+    ans:['6','7','8','10'], cor:2,
+    exp:'✓  40 ÷ 5 = 8. n = 8. The old equations seem to rearrange themselves in celebration!'
+  },
+  // ── 10 TYPED n  n×7=56
+  { type:'typed', floor:'Floor Ten', name:'The Silver Vault',
+    story:'Shelves of silver ingots gleam in lamplight. Seven identical ingots sit in the left pan, balanced against 56 on the right. You need the weight of one ingot.',
+    lp:'n × 7', rp:'56',
+    q:'What is n? Type your answer.',
+    ca:'8',
+    exp:'✓  56 ÷ 7 = 8. n = 8. The vault door swings wide — almost there!'
+  },
+  // ── 11 MC n  proportion n:4=6:8
+  { type:'mc', floor:'Floor Eleven', name:'The Skyward Chamber',
+    story:'Stars burn through a circular window in the ceiling. The scale holds two ratios: n parts to 4 on the left, and 6 parts to 8 on the right. They must be equivalent.',
+    lp:'n : 4', rp:'6 : 8',
+    q:'For the ratios to be equal, what is n?',
+    ans:['2','3','4','5'], cor:1,
+    exp:'✓  6 : 8 = 3 : 4, so n = 3. The stars seem to align above you!'
+  },
+  // ── 12 MC n  proportion n:15=2:5
+  { type:'mc', floor:'Floor Twelve', name:'The Sundial Gallery',
+    story:'A row of ancient sundials lines each wall, casting shadows at slightly different angles. The scale holds: n measures to 15 on the left, 2 parts to 5 on the right.',
+    lp:'n : 15', rp:'2 : 5',
+    q:'Find how many times 5 fits into 15, then scale the 2. What is n?',
+    ans:['3','5','6','10'], cor:2,
+    exp:'✓  15 ÷ 5 = 3. 3 × 2 = 6. n = 6. A sundial spins — the secret door cracks open!'
+  },
+  // ── 13 TYPED n  n×9=63
+  { type:'typed', floor:'Floor Thirteen', name:'The Obsidian Chamber',
+    story:'Nine polished obsidian slabs stand in the left pan. Their combined weight must match the counterweight of 63. You can feel the answer — find it.',
+    lp:'n × 9', rp:'63',
+    q:'Each slab weighs n. What is n?',
+    ca:'7',
+    exp:'✓  63 ÷ 9 = 7. n = 7. The obsidian glows deep violet — one more section to go!'
+  },
+
+  // ── TRANSITION B (shape intro) fires here (after index 12, before index 13) ──
+
+  // ── 14 SHAPE MC  warm-up: 4 circles = 20
+  { type:'mc', floor:'Floor Fourteen', name:'The Cipher Gallery',
+    story:'The alchemist leads you into a gallery lined with glowing symbols. "No letters here," they say. "Just shapes. Each shape hides a value — your job is the same as always: make the scale balance." They point to the scale. In the left pan: four circles, each weighing the same. In the right: 20.',
+    lp:'🔵 🔵 🔵 🔵', rp:'20',
+    q:'Each 🔵 weighs the same amount. What does one circle weigh?',
+    ans:['4','5','6','7'], cor:1,
+    exp:'✓  20 ÷ 4 = 5. Each circle weighs 5. An easy start — the gallery door swings open!'
+  },
+  // ── 15 SHAPE MC  two shapes: 2 circles + 1 square = 16, square=4
+  { type:'mc', floor:'Floor Fifteen', name:'The Cipher Gallery II',
+    story:'A second scale. This time both pans hold two different shapes. A small card pinned to the scale reads: "Each 🟧 weighs 4." The left pan holds 2 circles and 1 square. The right pan holds 16. You need to find the weight of one circle.',
+    lp:'🔵🔵 + 🟧', rp:'16',
+    q:'Each 🟧 weighs 4. Subtract the square\'s weight from 16 first — then split what\'s left between the circles. What does each 🔵 weigh?',
+    ans:['5','6','7','8'], cor:1,
+    exp:'✓  16 − 4 = 12. 12 ÷ 2 = 6. Each circle weighs 6. The second panel lights up!'
+  },
+  // ── 16 SHAPE MC  3 circles + 2 squares = 27, square=3
+  { type:'mc', floor:'Floor Sixteen', name:'The Cipher Gallery III',
+    story:'A third scale, and this one holds more shapes. The card reads: "Each 🟧 weighs 3." Three circles and two squares sit in the left pan. 27 sits in the right.',
+    lp:'🔵🔵🔵 + 🟧🟧', rp:'27',
+    q:'Each 🟧 weighs 3. Deal with both squares first, then divide among the circles. What does each 🔵 weigh?',
+    ans:['5','6','7','8'], cor:2,
+    exp:'✓  2 × 3 = 6. 27 − 6 = 21. 21 ÷ 3 = 7. Each circle weighs 7. Three panels lit — one more to go!'
+  },
+  // ── 17 SHAPE TYPED  5 circles + 2 squares = 36, square=3
+  { type:'typed', floor:'Floor Seventeen', name:'The Cipher Gallery IV',
+    story:'The fourth scale. This time, no choices — you must work it out yourself and type the answer. The card reads: "Each 🟧 weighs 3." Five circles and two squares sit in the left pan. 36 in the right.',
+    lp:'5🔵 + 2🟧', rp:'36',
+    q:'Each 🟧 weighs 3. Subtract both squares first, then divide. What does each 🔵 weigh?',
+    ca:'6',
+    exp:'✓  2 × 3 = 6. 36 − 6 = 30. 30 ÷ 5 = 6. Each circle weighs 6. The fourth panel glows!'
+  },
+  // ── 18 SHAPE TYPED  boss shape: 4 circles + 3 squares = 35, square=5
+  { type:'typed', floor:'Floor Eighteen', name:'The Cipher Gallery — Final Panel',
+    story:'The last scale in the gallery. Hardest yet. The card reads: "Each 🟧 weighs 5." Four circles and three squares are in the left pan. 35 in the right. The alchemist watches carefully.',
+    lp:'4🔵 + 3🟧', rp:'35',
+    q:'Each 🟧 weighs 5. Three steps: find the total square weight, subtract it, then divide. What does each 🔵 weigh?',
+    ca:'5',
+    exp:'✓  3 × 5 = 15. 35 − 15 = 20. 20 ÷ 4 = 5. Each circle weighs 5. All panels light up — the gallery is complete!'
+  },
+
+  // ── TRANSITION C (two-step level-up) fires here (after index 17, before index 18) ──
+
+  // ── 19 MC n  two-step: 2n+4=18
+  { type:'mc', floor:'Floor Nineteen', name:'The Twin-Lock Room',
+    story:'Two locks, not one. The scale shows two operations at once — n is multiplied, then a number is added. Undo them in order: deal with the addition first, then the multiplication.',
+    lp:'2×n + 4', rp:'18',
+    q:'Subtract 4 from both sides, then divide. What is n?',
+    ans:['5','6','7','8'], cor:2,
+    exp:'✓  18 − 4 = 14. 14 ÷ 2 = 7. n = 7. Both locks click open at once!'
+  },
+  // ── 20 MC n  two-step: 3n−3=24
+  { type:'mc', floor:'Floor Twenty', name:'The Ember Room',
+    story:'Glowing embers fill a stone furnace that heats the room from below. The scale has a twist — n is multiplied by 3, then 3 is subtracted. Add back first, then divide.',
+    lp:'3×n − 3', rp:'24',
+    q:'Add 3 to both sides first, then divide. What is n?',
+    ans:['7','8','9','10'], cor:2,
+    exp:'✓  24 + 3 = 27. 27 ÷ 3 = 9. n = 9. The furnace dims — the path is clear!'
+  },
+  // ── 21 TYPED n  two-step: 4n+8=32
+  { type:'typed', floor:'Floor Twenty-One', name:'The Copper Garden',
+    story:'Dozens of copper pipes wind through this room like jungle vines, dripping softly. Four groups of n, plus 8 more, must balance 32.',
+    lp:'4×n + 8', rp:'32',
+    q:'What is n? Subtract 8 first, then divide by 4.',
+    ca:'6',
+    exp:'✓  32 − 8 = 24. 24 ÷ 4 = 6. n = 6. The pipes hum in harmony!'
+  },
+  // ── 22 MC n  two-step: 5n−5=45
+  { type:'mc', floor:'Floor Twenty-Two', name:'The Hourglass Hall',
+    story:'Hundreds of hourglasses hang from the ceiling, all draining in silence. Five groups of n, minus 5, must balance 45.',
+    lp:'5×n − 5', rp:'45',
+    q:'Add 5 to both sides, then divide by 5. What is n?',
+    ans:['8','9','10','11'], cor:2,
+    exp:'✓  45 + 5 = 50. 50 ÷ 5 = 10. n = 10. All the hourglasses flip at once — extraordinary!'
+  },
+  // ── 23 TYPED n  boss: proportion n:20=3:5
+  { type:'typed', floor:'Floor Twenty-Three — The Summit', name:'The Grand Atelier',
+    story:'The very top of the tower. Through great windows the jungle stretches to every horizon, fireflies drifting below like fallen stars. The Grand Alchemical Scale stands before you — the final seal. Left pan: n : 20. Right pan: 3 : 5.',
+    lp:'n : 20', rp:'3 : 5',
+    q:'What is n? This is the final seal of the tower.',
+    ca:'12',
+    exp:'✓  5 × 4 = 20, so multiply 3 × 4 = 12. n = 12. The Grand Scale glows — the tower is yours.'
+  }
+];
+
+const TOTAL = Qs.length;
+let cur=0, wrongAttempts=0, totalWrong=0, answered=false, transDone=false, shapeDone=false, levelDone=false;
+
+function num(s) { const m=String(s).trim().match(/\d+/); return m?m[0]:String(s).trim().toLowerCase(); }
+
+function scaleEl() { return document.getElementById('scale-el'); }
+function scaleState(st) {
+  const el=scaleEl(); if(!el) return;
+  el.classList.remove('scale-balanced','scale-wrong');
+  if(st==='balanced') el.classList.add('scale-balanced');
+  else if(st==='wrong') { el.classList.add('scale-wrong'); setTimeout(()=>el&&el.classList.remove('scale-wrong'),600); }
+}
+function scaleHTML(lp,rp) {
+  return `<div class="scale-wrap" id="scale-el">
+    <div class="beam-outer"><div class="beam"></div></div>
+    <div class="pillar"><div class="post"></div><div class="base"></div></div>
+    <div class="sc-side sc-side-l"><div class="chain"></div><div class="pan"><div class="pan-expr">${lp}</div></div></div>
+    <div class="sc-side sc-side-r"><div class="chain"></div><div class="pan"><div class="pan-expr">${rp}</div></div></div>
+  </div>`;
+}
+
+function renderTitle() {
+  document.getElementById('gc').innerHTML=`
+    <div class="title-scr screen">
+      <p class="t-eyebrow">A missing-value adventure</p>
+      <span class="t-icon">⚗️</span>
+      <h1 class="t-main">The Alchemist's Scale</h1>
+      <p class="t-tag">Balance the Unknown</p>
+      <p class="t-intro">Deep in a jungle tower, an ancient alchemist left twenty-three floors of unsolved scales. Each one hides a missing value. Make each scale balance and the next floor unlocks — all the way to the Grand Atelier at the top.</p>
+      <button class="start-btn" onclick="startGame()">Climb the Tower</button>
+    </div>`;
+}
+
+function renderTransitionA() {
+  transDone=true;
+  document.getElementById('gc').innerHTML=`
+    <div class="trans-scr screen">
+      <h2 class="trans-headline">The Alchemist Appears</h2>
+      <p class="trans-body">The alchemist steps from the shadows, studying you with bright eyes.<br><br>"You have mastered the mystery box," they say. "Every time you solved one of those scales, the box held a number — a value waiting to be found. Mathematicians have a proper name for this. They call it a <em>variable</em>."<br><br>They write a single letter in the air with a glowing finger. It hangs there, shimmering.</p>
+      <div class="symbol-row">
+        <div class="sym-box"><span class="sym-char is-box">□</span><span class="sym-desc">mystery box</span></div>
+        <span class="sym-arrow">→</span>
+        <div class="sym-box"><span class="sym-char is-n">n</span><span class="sym-desc">variable</span></div>
+      </div>
+      <p class="trans-body" style="margin-bottom:20px">"Same idea — a number you don't know yet, but can find by keeping the scale balanced. From here, the scales will use <em>n</em>."</p>
+      <button class="understand-btn" onclick="renderQuestion()">I understand — show me n</button>
+    </div>`;
+}
+
+function renderShapeIntro() {
+  shapeDone=true;
+  document.getElementById('gc').innerHTML=`
+    <div class="trans-scr screen">
+      <h2 class="trans-headline">The Cipher Gallery</h2>
+      <p class="trans-body">The alchemist pauses on the stairs and turns to face you.<br><br>"Before we go further, I want to show you something. The scales on the next floors use <em>shapes</em> instead of letters — circles and squares, each with a hidden weight."<br><br>"It works exactly the same way. If you know what the square weighs, you can subtract it from the total. Whatever is left belongs to the circles — then you just divide."</p>
+      <div class="symbol-row" style="gap:40px">
+        <div class="sym-box"><span style="font-size:2.2rem;display:block;margin-bottom:6px">🔵</span><span class="sym-desc">unknown weight</span></div>
+        <div class="sym-box"><span style="font-size:2.2rem;display:block;margin-bottom:6px">🟧</span><span class="sym-desc">known weight</span></div>
+      </div>
+      <p class="trans-body" style="margin-bottom:20px">"Subtract the squares. Divide among the circles. That's it."</p>
+      <button class="understand-btn" onclick="renderQuestion()">Got it — show me the shapes</button>
+    </div>`;
+}
+
+function renderLevelUp() {
+  levelDone=true;
+  document.getElementById('gc').innerHTML=`
+    <div class="level-scr screen">
+      <span class="level-icon">🔓</span>
+      <h2 class="level-headline">Shapes → Letters</h2>
+      <p class="level-body">"You see it now," the alchemist says quietly. "Every shape puzzle you just solved — those were two-step equations. You were subtracting first, then dividing. The circles were n all along."<br><br>They write on the wall beside you:</p>
+      <div class="level-eg">
+        <span style="color:rgba(94,206,202,.7)">Shape version:</span>&nbsp; 3🔵 + 2🟧 = 27 &nbsp;(🟧 = 3)<br>
+        <span style="color:rgba(94,206,202,.7)">Algebra version:</span>&nbsp; 3×n + 6 = 27<br>
+        Step 1 → 27 − 6 = 21 &nbsp;→&nbsp; Step 2 → 21 ÷ 3 = <span class="hi">7</span> &nbsp;→&nbsp; <span class="hi">n = 7 ✓</span>
+      </div>
+      <button class="ready-btn" onclick="renderQuestion()">I see it — open the next doors</button>
+    </div>`;
+}
+
+function renderQuestion() {
+  const q=Qs[cur];
+  const pct=(cur/TOTAL)*100;
+  const letters=['A','B','C','D'];
+  const ansBlock = q.type==='typed'
+    ? `<div class="type-badge">Type your answer</div>
+       <div class="typed-row">
+         <input class="typed-in" id="ti" type="text" placeholder="Type your answer…" autocomplete="off" autocorrect="off" spellcheck="false"/>
+         <button class="sub-btn" id="sb" onclick="checkTyped()">Submit</button>
+       </div>
+       <p class="typed-hint">Just the number is fine</p>`
+    : `<div class="answers">${q.ans.map((a,i)=>`<button class="ans-btn" onclick="checkAns(${i})" id="ab${i}"><span class="ans-ltr">${letters[i]}</span>${a}</button>`).join('')}</div>`;
+
+  document.getElementById('gc').innerHTML=`
+    <div class="screen">
+      <div class="progress-wrap">
+        <span class="prog-label">Progress</span>
+        <div class="prog-track"><div class="prog-fill" style="width:${pct}%"></div></div>
+        <span class="prog-count">${cur+1} / ${TOTAL}</span>
+      </div>
+      <div class="chamber-hdr">
+        <p class="floor-lbl">${q.floor}</p>
+        <h2 class="chamber-name">${q.name}</h2>
+      </div>
+      <div class="dvdr"><div class="dvdr-line"></div><div class="dvdr-dia"></div><div class="dvdr-line"></div></div>
+      <p class="story">${q.story}</p>
+      ${scaleHTML(q.lp,q.rp)}
+      <p class="question-txt">${q.q}</p>
+      ${ansBlock}
+      <div class="feedback" id="fb"></div>
+      <button class="cont-btn" id="cb" onclick="nextQ()">Continue →</button>
+    </div>`;
+
+  answered=false;
+  if(q.type==='typed') {
+    const ti=document.getElementById('ti');
+    ti.addEventListener('keydown',e=>{ if(e.key==='Enter') checkTyped(); });
+    ti.focus();
+  }
+}
+
+function checkAns(idx) {
+  if(answered) return;
+  const q=Qs[cur];
+  const fb=document.getElementById('fb'), cb=document.getElementById('cb');
+  const btns=document.querySelectorAll('.ans-btn');
+  btns.forEach(b=>b.disabled=true);
+  if(idx===q.cor) {
+    answered=true; btns[idx].classList.add('correct');
+    fb.textContent=q.exp; fb.className='feedback ok-msg';
+    cb.classList.add('show'); scaleState('balanced');
+  } else {
+    totalWrong++; wrongAttempts++; btns[idx].classList.add('wrong');
+    const hints=['Not quite — what value makes both sides equal?','Almost! Try subtracting the known weight first, then divide.','Keep going — deal with the squares first, then the circles.'];
+    fb.textContent=hints[Math.min(wrongAttempts-1,hints.length-1)]; fb.className='feedback bad-msg';
+    scaleState('wrong');
+    setTimeout(()=>btns.forEach((b,i)=>{ if(i!==idx) b.disabled=false; }),660);
+  }
+}
+
+function checkTyped() {
+  if(answered) return;
+  const q=Qs[cur];
+  const ti=document.getElementById('ti'), sb=document.getElementById('sb');
+  const fb=document.getElementById('fb'), cb=document.getElementById('cb');
+  const raw=ti.value.trim(); if(!raw) return;
+  if(num(raw)===num(q.ca)) {
+    answered=true; ti.disabled=true; sb.disabled=true; ti.classList.add('ok');
+    fb.textContent=q.exp; fb.className='feedback ok-msg';
+    cb.classList.add('show'); scaleState('balanced');
+  } else {
+    totalWrong++; wrongAttempts++; ti.classList.add('bad'); ti.value='';
+    const hints=['Not quite — just type the number. Subtract the squares first.','Try again. Multiply the square weight by how many there are, then subtract.','So close! Check your division — subtract first, then divide among the circles.'];
+    fb.textContent=hints[Math.min(wrongAttempts-1,hints.length-1)]; fb.className='feedback bad-msg';
+    scaleState('wrong');
+    setTimeout(()=>{ ti.classList.remove('bad'); ti.focus(); },500);
+  }
+}
+
+function nextQ() {
+  cur++; wrongAttempts=0;
+  if(cur===7  && !transDone)  { renderTransitionA(); return; }
+  if(cur===13 && !shapeDone)  { renderShapeIntro();  return; }
+  if(cur===18 && !levelDone)  { renderLevelUp();     return; }
+  if(cur>=TOTAL) { renderWin(); return; }
+  renderQuestion();
+}
+
+function startGame() {
+  cur=0; totalWrong=0; wrongAttempts=0; answered=false; transDone=false; shapeDone=false; levelDone=false;
+  renderQuestion();
+}
+
+function renderWin() {
+  const badge = totalWrong===0 ? 'Flawless — a true Master Alchemist! 🏆'
+    : totalWrong<=6 ? 'Excellent Apprentice! ⭐' : 'Well done — the tower is balanced. 🌟';
+  document.getElementById('gc').innerHTML=`
+    <div class="win-scr screen">
+      <span class="win-icon">🔮</span>
+      <h2 class="win-title">The Tower is Balanced!</h2>
+      <p class="win-text">You solved every scale in the alchemist's tower — from the first mystery box on the ground floor, through the Cipher Gallery, all the way to the Grand Atelier at the summit of Floor Twenty-Three. The alchemist's entire collection of notes is yours.</p>
+      <div class="win-stats">
+        <div class="stat"><span class="stat-n">23</span><span class="stat-l">Scales Balanced</span></div>
+        <div class="stat"><span class="stat-n">${totalWrong}</span><span class="stat-l">Wrong Attempts</span></div>
+      </div>
+      <p class="win-badge">${badge}</p>
+      <button class="again-btn" onclick="renderTitle()">Play Again</button>
+    </div>`;
+}
+
+renderTitle();
+</script>
+</body>
+</html>
